@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Abroad Study Cost Predictor
+    </title>
+    <style>
+        /* Style for the table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            border: 2px;
+            border-style: double;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Style for table header */
+        th {
+            background-color: #f62f2f;
+            color: #ffffff;
+            font-weight: bold;
+            border: 2px;
+            border-style: groove;
+            padding: 10px;
+            text-align: left;
+        }
+    
+        /* Alternate row background color */
+        tbody tr:nth-child(even) {
+            background-color: #c38c8c;
+        }
+    
+        /* Style for table data cells */
+        td {
+            padding: 10px;
+        }
+    
+        /* Hover effect on table rows */
+        tbody tr:hover {
+            background-color: #d7d7d7;
+        }
+    </style>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body bgcolor="#75767B">
+    <div class="bg-dark">
+        <div class="container" style="width: 100%; height: 100vh;">
+            <div class="row">
+                <div class="card" style="width: 100%; height: 100%; margin-top: 5%">
+                    <div class="card-header">
+                        <div class="col-12" style="text-align: center">
+                            <h1>Welcome To Abroad Study Cost Predictor!!</h1>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="margin-left: 110px">
+                            <form method="post" accept-charset="UTF-8">
+                                <div class="col-10 form-group" style="text-align: left">
+                                    <label><b>Select Country:</b></label>
+                                    <select class="selectpicker form-control" id="country" name="country" required="1">
+                                        {% for country in countries %}
+                                        <option value="{{ country }}">{{ country }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-10 form-group" style="text-align: left">
+                                    <label><b>Select Course Type:</b></label>
+                                    <select class="selectpicker form-control" id="course_type" name="course_type"
+                                        required="1" >
+                                        {% for type in course_types %}
+                                        <option value="{{ type }}">{{ type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-10 form-group" style="text-align: left">
+                                    <label><b>Select Course (Specialization):</b></label>
+                                    <select class="selectpicker form-control" id="course_id" name="course_id" required="1">
+                                        {% for course in courses %}
+                                        <option value="{{ course }}">{{ course }}</option>
+                                        {% endfor %}
+                                    </select><br>
+                                    
+                                    <button class="btn btn-primary form-control" onclick="send_data()" type="submit"><b>Predict Cost</b></button><br><br>
+                                    <button class="btn btn-success form-control" onclick="min_data()"><b>More Options</b></button><br><br>
+                                </div>
+                            </form>
+    
+                            <div class="predict-container" style="align-items: center;">
+                                <h3><span id="prediction"></span></h3><br><br>
+                                <h3><span id="minimum"></span></h3>
+                                <h4><span id="affordable-courses"></span></h4>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+
+          
+      function request_btn(){
+          // Get references to the button and the form
+          var showFormButton = document.getElementById('show-form-button');
+        var courseRequestForm = document.querySelector('.course-request-form');
+
+        if (courseRequestForm.style.display === 'none') {
+                courseRequestForm.style.display = 'block';
+            } else {
+                courseRequestForm.style.display = 'none';
+            }
+      }
+        function form_handler(event){
+              event.preventDefault();
+        }
+        function send_data(){
+            //suppress form default behaviour
+            document.querySelector('form').addEventListener('submit',form_handler);
+
+            //send data to predict
+            var fd = new FormData(document.querySelector('form'));
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST','/predict', true);
+            document.getElementById('prediction').innerHTML="Wait, Predicting the price.....";
+
+            xhr.onreadystatechange=function()
+            {
+                if(xhr.readyState == XMLHttpRequest.DONE)
+                {
+                    document.getElementById('prediction').innerHTML="Prediction: ₹" + " " + xhr.responseText;
+                }
+            }
+            xhr.onload = function(){}
+            xhr.send(fd);
+        }
+        function min_data(){
+            //suppress form default behaviour
+            document.querySelector('form').addEventListener('submit',form_handler);
+            // Check if prediction has been made
+    var predictionText = document.getElementById('prediction').innerText.trim();
+    if (predictionText === "") {
+        // Display warning message
+        document.getElementById('minimum').innerHTML = "Please predict the price first.";
+        return; // Exit the function
+    }
+
+            //send data to predict
+            var fd = new FormData(document.querySelector('form'));
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST','/min/<price>', true);
+            document.getElementById('minimum').innerHTML="Fetching more options for you.........";
+
+            xhr.onreadystatechange=function()
+            {
+                if(xhr.readyState == XMLHttpRequest.DONE)
+                {
+                    var response = JSON.parse(xhr.responseText);
+
+// Update HTML to display affordable courses in a table
+var tableHtml = "<table><thead><tr><th>Country</th><th>Course</th><th>Fees</th></tr></thead><tbody>";
+            response.forEach(function(course) {
+                tableHtml += "<tr><td>" + course['COUNTRY'] + "</td><td>" + course['COURSE (SPECIALIZATION)'] + "</td><td>" + course['FEES'] + "</td></tr>";
+            });
+            tableHtml += "</tbody></table>";
+            document.getElementById('affordable-courses').innerHTML = tableHtml;
+
+document.getElementById('minimum').innerHTML = "Same Course in other Countries with Fee are:";
+                }
+            }
+            xhr.onload = function(){}
+            xhr.send(fd);
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
+
+</body>
+
+</html>

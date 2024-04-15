@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Welcome Page</title>
+    <style>
+body{
+  background-color: rgb(32, 30, 30);
+}
+.heading{
+  font-size: 30px;
+  font-weight: 600;
+  color: aqua;
+  text-align: center;
+  margin-top: 35px;
+}
+.card-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 20px;
+}
+    </style>
+  </head>
+  <body>
+    <h1 style="text-align: center; color: aliceblue; margin-top: 5%;">Welcome To Abroad Study Cost Predictor!!</h1>
+    
+    <div>
+      <h3 class="heading">DEVELOPERS</h3>
+    </div>
+    <div class="card-container">
+      <div class="card" style="width: 18rem; background-color:rgba(240, 248, 255, 0.796);  height: 400px;">
+        <img src="{{ url_for('static', filename='images/vishakha_img.png') }}" alt="Vishakha" class="card-img-top" style="height: 100px; width: 100px; display: flex; margin-left:30%; margin-top: 10px;">
+        <div class="card-body">
+          <b class="card-text">Vishakha Pingat, TE/IT</b>
+          <p class="card-text">
+          A dynamic and enthusiastic innovator fueled by a relentless drive to push boundaries and challenge the status quo. With a curious mind and a passion for thinking outside the box.</p>
+          <div style="margin-left: 20px;">
+            <button class="btn btn-primary" style="pointer-events: none; cursor: default;"><b>Front-End Development</b></button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="width: 18rem; background-color: rgba(240, 248, 255, 0.796); height: 400px;">
+        <img src="{{ url_for('static', filename='images/tejle_img.png') }}" alt="Tejal" class="card-img-top" style="height: 100px; width: 100px; display: flex; margin-left:30%; margin-top: 10px;">
+        <div class="card-body">
+          <b class="card-text">Tejal Petkar, TE/IT</b>
+          <p class="card-text">
+          A dedicated and enthusiastic documentor with a flair for transforming complex information into clear and accessible content. With a meticulous attention towards details</p>
+          <div style="margin-left: 15px;">
+            <button class="btn btn-primary" style="pointer-events: none; cursor: default;"><b>Documentation & Data Collection </b></button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="width: 18rem; background-color: rgba(240, 248, 255, 0.796); height:400px;">
+        <img src="{{ url_for('static', filename='images/male_img.png') }}" alt="Shivam" class="card-img-top" style="height: 100px; width: 100px; display: flex; margin-left:30%; margin-top: 10px;">
+        <div class="card-body">
+          <b class="card-text">Shivam Pawale, TE/IT</b>
+          <p class="card-text">He approaches each project with creativity & a commitment to continuous learning and staying abreast of latest technology.</p>
+          <div style="margin-left: 15px;">
+            <button class="btn btn-primary" style="pointer-events: none; cursor: default; width: 100%;"><b>Front-End & Backend Developement</b></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-warning" style="margin-left: 74%; margin-top: 3%;" onclick="location.href='/costpredict' "><b>Click Here To Proceed >> </b></button>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>
