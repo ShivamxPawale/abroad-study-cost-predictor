@@ -16,7 +16,7 @@
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-    
+
         /* Style for table header */
         th {
             background-color: #f62f2f;
@@ -27,30 +27,44 @@
             padding: 10px;
             text-align: left;
         }
-    
+
         /* Alternate row background color */
         tbody tr:nth-child(even) {
             background-color: #c38c8c;
         }
-    
+
         /* Style for table data cells */
         td {
             padding: 10px;
         }
-    
+
         /* Hover effect on table rows */
         tbody tr:hover {
             background-color: #d7d7d7;
         }
+        .predict_box{
+            display: inline-flex;
+    background-image: linear-gradient(147deg, #fe8a39 0%, #fd3838 74%);
+    padding: 15px 35px;
+    border-radius: 50px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+        justify-content: center;
+    text-align: center;
+    letter-spacing: 1px;
+    width: fit-content;
+        }
     </style>
-    
+
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 
 <body bgcolor="#75767B">
     <div class="bg-dark">
-        <div class="container" style="width: 100%; height: 100vh;">
+        <div class="container" style="width: 100%; height: 150vh;">
             <div class="row">
                 <div class="card" style="width: 100%; height: 100%; margin-top: 5%">
                     <div class="card-header">
@@ -63,7 +77,7 @@
                             <form method="post" accept-charset="UTF-8">
                                 <div class="col-10 form-group" style="text-align: left">
                                     <label><b>Select Country:</b></label>
-                                    <select class="selectpicker form-control" id="country" name="country" required="1">
+                                    <select class="selectpicker form-control" id="country" name="country" required onchange="checkPredictButton()">
                                         {% for country in countries %}
                                         <option value="{{ country }}">{{ country }}</option>
                                         {% endfor %}
@@ -72,7 +86,7 @@
                                 <div class="col-10 form-group" style="text-align: left">
                                     <label><b>Select Course Type:</b></label>
                                     <select class="selectpicker form-control" id="course_type" name="course_type"
-                                        required="1" >
+                                        required onchange="checkPredictButton()">
                                         {% for type in course_types %}
                                         <option value="{{ type }}">{{ type }}</option>
                                         {% endfor %}
@@ -80,21 +94,28 @@
                                 </div>
                                 <div class="col-10 form-group" style="text-align: left">
                                     <label><b>Select Course (Specialization):</b></label>
-                                    <select class="selectpicker form-control" id="course_id" name="course_id" required="1">
+                                    <select class="selectpicker form-control" id="course_id" name="course_id" required onchange="checkPredictButton()">
                                         {% for course in courses %}
                                         <option value="{{ course }}">{{ course }}</option>
                                         {% endfor %}
                                     </select><br>
-                                    
-                                    <button class="btn btn-primary form-control" onclick="send_data()" type="submit"><b>Predict Cost</b></button><br><br>
-                                    <button class="btn btn-success form-control" onclick="min_data()"><b>More Options</b></button><br><br>
+
+                                    <button class="btn btn-primary form-control" onclick="send_data()"
+                                        type="submit" disabled id="predictButton"><b>Predict Cost</b></button><br><br>
+                                    <button class="btn btn-success form-control" onclick="min_data()"><b>More
+                                            Options</b></button><br><br>
+                                    <a href="/request-course" class="btn btn-warning form-control"><b>Request A
+                                            Course</b></a><br><br>
                                 </div>
+                                <div class="predict-container" style="align-items: center;">
+                                     <h3><span id="prediction1" class="predict_box" style="display: none;"></span></h3><br><br>
+                                     <h3><span id="prediction2" class="predict_box" style="display: none;"></span></h3><br><br>
+                                     <h3><span id="prediction3" class="predict_box" style="display: none;"></span></h3><br><br>
+                                     <h3><span id="minimum"></span></h3>
+                                     <h4><span id="affordable-courses"></span></h4>
                             </form>
-    
-                            <div class="predict-container" style="align-items: center;">
-                                <h3><span id="prediction"></span></h3><br><br>
-                                <h3><span id="minimum"></span></h3>
-                                <h4><span id="affordable-courses"></span></h4>
+
+                         
 
                             </div>
                         </div>
@@ -105,88 +126,127 @@
 
     </div>
     <script>
+        function checkPredictButton() {
+            var countrySelect = document.getElementById("country");
+            var courseSelect = document.getElementById("course_type");
+            var courseSpecificSelect = document.getElementById("course_id");
+            var predictButton = document.getElementById("predictButton");
 
-          
-      function request_btn(){
-          // Get references to the button and the form
-          var showFormButton = document.getElementById('show-form-button');
-        var courseRequestForm = document.querySelector('.course-request-form');
+            if (countrySelect.selectedIndex > 0 && courseSelect.selectedIndex > 0 && courseSpecificSelect.selectedIndex > 0) {
+                predictButton.disabled = false;
+            } else {
+                predictButton.disabled = true;
+            }
+        }
 
-        if (courseRequestForm.style.display === 'none') {
+
+        function request_btn() {
+            // Get references to the button and the form
+            var showFormButton = document.getElementById('show-form-button');
+            var courseRequestForm = document.querySelector('.course-request-form');
+
+            if (courseRequestForm.style.display === 'none') {
                 courseRequestForm.style.display = 'block';
             } else {
                 courseRequestForm.style.display = 'none';
             }
-      }
-        function form_handler(event){
-              event.preventDefault();
         }
-        function send_data(){
+        function form_handler(event) {
+            event.preventDefault();
+        }
+        function send_data() {
             //suppress form default behaviour
-            document.querySelector('form').addEventListener('submit',form_handler);
+            document.querySelector('form').addEventListener('submit', form_handler);
 
             //send data to predict
             var fd = new FormData(document.querySelector('form'));
 
             var xhr = new XMLHttpRequest();
-            xhr.open('POST','/predict', true);
-            document.getElementById('prediction').innerHTML="Wait, Predicting the price.....";
+            var xhr2 = new XMLHttpRequest();
+            var xhr3 = new XMLHttpRequest();
+            xhr.open('POST', '/predict', true);
+            xhr2.open('POST', '/predict2', true);
+            xhr3.open('POST', '/predict3', true);
 
-            xhr.onreadystatechange=function()
-            {
-                if(xhr.readyState == XMLHttpRequest.DONE)
-                {
-                    document.getElementById('prediction').innerHTML="Prediction: ₹" + " " + xhr.responseText;
+            document.getElementById('prediction1').style.display = "none";
+            document.getElementById('prediction2').style.display = "none";
+            document.getElementById('prediction3').style.display = "none";
+
+            document.getElementById('prediction1').innerHTML = "Wait, Predicting the price.....";
+            document.getElementById('prediction2').innerHTML = "Wait, Predicting the price.....";
+            document.getElementById('prediction3').innerHTML = "Wait, Predicting the price.....";
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    document.getElementById('prediction1').innerHTML = "Prediction by Random Forest: ₹" + " " + xhr.responseText;
+                    document.getElementById('prediction1').style.display = "block";
                 }
             }
-            xhr.onload = function(){}
+            xhr2.onreadystatechange = function () {
+                if (xhr2.readyState == XMLHttpRequest.DONE) {
+                    document.getElementById('prediction2').innerHTML = "Prediction by Linear Regression: ₹" + " " + xhr2.responseText;
+                    document.getElementById('prediction2').style.display = "block";
+                }
+            }
+            xhr3.onreadystatechange = function () {
+                if (xhr3.readyState == XMLHttpRequest.DONE) {
+                    document.getElementById('prediction3').innerHTML = "Prediction by Ridge Regression ₹" + " " + xhr3.responseText;
+                    document.getElementById('prediction3').style.display = "block";
+                }
+            }
+            xhr.onload = function () { }
             xhr.send(fd);
+            xhr2.onload = function () { }
+            xhr2.send(fd);
+            xhr3.onload = function () { }
+            xhr3.send(fd);
         }
-        function min_data(){
+        function min_data() {
             //suppress form default behaviour
-            document.querySelector('form').addEventListener('submit',form_handler);
+            document.querySelector('form').addEventListener('submit', form_handler);
             // Check if prediction has been made
-    var predictionText = document.getElementById('prediction').innerText.trim();
-    if (predictionText === "") {
-        // Display warning message
-        document.getElementById('minimum').innerHTML = "Please predict the price first.";
-        return; // Exit the function
-    }
+            var predictionText = document.getElementById('prediction1').innerText.trim();
+            if (predictionText === "") {
+                // Display warning message
+                document.getElementById('minimum').innerHTML = "Please predict the price first.";
+                return; // Exit the function
+            }
 
             //send data to predict
             var fd = new FormData(document.querySelector('form'));
 
             var xhr = new XMLHttpRequest();
-            xhr.open('POST','/min/<price>', true);
-            document.getElementById('minimum').innerHTML="Fetching more options for you.........";
+            xhr.open('POST', '/min/<price>', true);
+            document.getElementById('minimum').innerHTML = "Fetching more options for you.........";
 
-            xhr.onreadystatechange=function()
-            {
-                if(xhr.readyState == XMLHttpRequest.DONE)
-                {
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
                     var response = JSON.parse(xhr.responseText);
 
-// Update HTML to display affordable courses in a table
-var tableHtml = "<table><thead><tr><th>Country</th><th>Course</th><th>Fees</th></tr></thead><tbody>";
-            response.forEach(function(course) {
-                tableHtml += "<tr><td>" + course['COUNTRY'] + "</td><td>" + course['COURSE (SPECIALIZATION)'] + "</td><td>" + course['FEES'] + "</td></tr>";
-            });
-            tableHtml += "</tbody></table>";
-            document.getElementById('affordable-courses').innerHTML = tableHtml;
+                    // Update HTML to display affordable courses in a table
+                    var tableHtml = "<table><thead><tr><th>Country</th><th>Course</th><th>Fees</th></tr></thead><tbody>";
+                    response.forEach(function (course) {
+                        tableHtml += "<tr><td>" + course['COUNTRY'] + "</td><td>" + course['COURSE (SPECIALIZATION)'] + "</td><td>" + course['FEES'] + "</td></tr>";
+                    });
+                    tableHtml += "</tbody></table>";
+                    document.getElementById('affordable-courses').innerHTML = tableHtml;
 
-document.getElementById('minimum').innerHTML = "Same Course in other Countries with Fee are:";
+                    document.getElementById('minimum').innerHTML = "Same Course in other Countries with Fee are:";
                 }
             }
-            xhr.onload = function(){}
+            xhr.onload = function () { }
             xhr.send(fd);
         }
+
     </script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
-
-
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
-
 </html>
